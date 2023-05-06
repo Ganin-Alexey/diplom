@@ -1,14 +1,6 @@
 <template>
-  <div id="app">
-        <header>
-            <router-link to="/">
-                <h1>
-                    Awesome Blog
-                </h1>
-            </router-link>
-            <router-view />
-        </header>
-  </div>
+  <img alt="Vue logo" src="./assets/logo.png">
+  <HelloWorld msg="Welcome to Your Vue.js App"/>
 </template>
 
 <script>
