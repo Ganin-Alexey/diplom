@@ -4,7 +4,7 @@
          alt="img">
     <p>Product name: {{product.name}}</p>
     <p>Article: {{product.article}}</p>
-    <p>Price: {{product.price | toFix | formattedPrice}}</p>
+    <p>Price: {{filter(product.price, toFix, formattedPrice)}}</p>
     <button
         class="v-catalog-item__add_to_cart_btn btn"
         @click="addToCart"

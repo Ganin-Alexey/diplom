@@ -1,5 +1,6 @@
 <template>
   <div class='v-cart'>
+    AAAAAAAAAAAAAAAAAAAAA CART
     <router-link :to="{name: 'catalog'}">
       <div class="v-catalog__link_to_cart">Back to Catalog</div>
     </router-link>
@@ -15,7 +16,7 @@
     />
     <div class="v-cart__total">
       <p class="total__name">Total:</p>
-      <p>{{cartTotalCost | toFix | formattedPrice}}</p>
+      <!-- <p>{filter{cartTotalCost | toFix | formattedPrice}}</p> -->
     </div>
   </div>
 </template>

@@ -6,6 +6,7 @@
         to Catalog
       </router-link>
     </p>
+    <router-view />
   </div>
 </template>
 
