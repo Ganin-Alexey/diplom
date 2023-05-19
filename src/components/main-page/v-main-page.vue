@@ -1,13 +1,10 @@
+/* eslint-disable */
 <template>
-  <div class='v-main-page'>
-    <h1>Online-shop</h1>
-    <p>
+  <div>
       <router-link :to="{name: 'catalog'}">
-        to Catalog
       </router-link>
-    </p>
     <router-view />
-  </div>
+   </div>
 </template>
 
 <script>

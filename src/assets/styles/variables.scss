@@ -3,5 +3,28 @@ $margin: 8px;
 
 $green-bg: #26ae68;
 $green-bg-hover: #31c375;
+// $gray-ico: #8A8A8A;
+// $light-grey: #8A8A8A;
+// $dark-grey: #242424;
+// $purple-light: #DA00FE;
+// $purple-dark: #A100ED;
 
+$dark-grey: rgba(36, 36, 36, 1);
+$dark-slate-gray-2: rgba(45, 45, 45, 1);
+$gray-3: rgba(122, 122, 122, 1);
+$gray-ico: rgba(138, 138, 138, 1);
+$light-grey: rgba(203, 203, 203, 1);
+$purple-dark: rgba(161, 0, 237, 1);
+$purple-light: rgba(218, 0, 254, 1);
+$light_dart: rgba(50, 50, 50, 1);
+$gray-3: #8A8A8A;
+$dark-slate-gray-2: linear-gradient(96.97deg, #000000 2.78%, rgba(34, 34, 34, 0.66) 152.37%);
 $radius: 4px;
+
+
+@mixin roboto-12-bold {
+    font-family: "Roboto";
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 14px;
+  }

@@ -1,34 +1,45 @@
 <template>
-  <div class='v-cart'>
-    <router-link :to="{name: 'catalog'}">
-      <div class="v-catalog__link_to_cart">Back to Catalog</div>
-    </router-link>
-    <h1>Cart</h1>
-    <p v-if="!cart_data.length">There are no products in cart...</p>
-    <v-cart-item
-        v-for="(item, index) in cart_data"
-        :key="item.article"
-        :cart_item_data="item"
-        @deleteFromCart="deleteFromCart(index)"
-        @increment="increment(index)"
-        @decrement="decrement(index)"
-    />
-    <div class="v-cart__total">
-      <p class="total__name">Total:</p>
-      <p>{{filter(cartTotalCost | toFix | formattedPrice)}}</p>
+  <div  v-if="CART.length" class="box-style price-range">
+    <h3 class="mb-30">Корзина</h3>
+    <div class="collapse show" id="pricingOne">
+      <ol class="list-group list-group-numbered">
+
+       
+
+        <a v-for="(product, index) in CART" :key="product.id" class="list-group-item d-flex justify-content-between align-items-start">
+          <router-link active-class="false" exact-path-active-class="false" exact-active-class="false" :to="`/product/${product.slug}`">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">{{ product.title }}</div>
+              {{ product.price }} ₽/шт.
+            </div>
+            <span class="badge bg-primary rounded-pill">{{ product.quantity }} шт. - {{ product.quantity *  product.price }} ₽</span>
+          </router-link>
+          <button type="button" v-on:click.stop="deleteFromCart(index)" class="btn-close p-3" aria-label="Удалить из корзины"></button>
+        </a>
+      
+      </ol>
+      <br>
+      <div class="d-grid gap-2">
+        <li v-if="this.$route.name == 'formOfPayment'" class="list-group-item d-flex justify-content-between">
+          <span>Всего</span>
+          <strong>{{cartTotalCost}} ₽</strong>
+        </li>
+        <router-link v-else :to="{name: 'formOfPayment'}" active-class="false" exact-path-active-class="false" exact-active-class="false">
+          
+            <button class="btn btn-primary" type="button">Оплатить {{cartTotalCost}} ₽</button>
+          
+        </router-link>
+      </div> 
+      
     </div>
   </div>
 </template>
 
 <script>
-  import vCartItem from './v-cart-item'
-  import toFix from "../../filters/toFix";
-  import formattedPrice from "../../filters/price-format";
-  import {mapActions} from 'vuex'
+  import {mapActions, mapGetters} from 'vuex'
   export default {
     name: "v-cart",
     components: {
-      vCartItem
     },
     props: {
       cart_data: {
@@ -41,19 +52,18 @@
     data() {
       return {}
     },
-    filters: {
-      formattedPrice,
-      toFix
-    },
     computed: {
+      ...mapGetters([
+        'PRODUCTS',
+        'CART',
+      ]),
       cartTotalCost() {
         let result = []
 
-        if (this.cart_data.length) {
-          for (let item of this.cart_data) {
+        if (this.CART.length) {
+          for (let item of this.CART) {
             result.push(item.price * item.quantity)
           }
-
           result = result.reduce(function (sum, el) {
             return sum + el;
           })
@@ -76,30 +86,15 @@
         this.DECREMENT_CART_ITEM(index)
       },
       deleteFromCart(index) {
-        this.DELETE_FROM_CART(index)
-      }
+        this.DELETE_FROM_CART(index);
+        if (this.CART.length == 0  & this.$route.name == 'formOfPayment') {
+          this.$router.push({path: '/'});
+        }
+      },
     }
   }
 </script>
 
 <style lang="scss">
-  .v-cart {
-    margin-bottom: 100px;
-    &__total {
-      position: fixed;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      padding: $padding*2 $padding*3;
-      display: flex;
-      justify-content: center;
-      background: $green-bg;
-      color: #ffffff;
-      font-size: 20px;
-    }
 
-    .total__name {
-      margin-right: $margin*2;
-    }
-  }
 </style>

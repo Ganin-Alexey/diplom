@@ -1,6 +1,41 @@
 <template>
   <div class='v-catalog-item'>
-
+    <div class="col-lg-6 col-md-6">
+      <div class="single-product">
+        <div class="product-img">
+          <a href="product-details.html">
+            <img src="@/assets/images/product/l-product-1.jpg" alt="">
+          </a>
+          <div class="product-action">
+            <a href="javascript:void(0)"><i class="lni lni-heart"></i></a>
+            <a href="javascript:void(0)" class="share"><i class="lni lni-share"></i></a>
+          </div>
+        </div>
+  
+        <div class="product-content">
+          <h3 class="name"><a href="product-details.html">Apple iPhone x</a></h3>
+          <span class="update">Last Update: 5 hours ago</span>
+          <ul class="address">
+            <li>
+              <a href="javascript:void(0)"><i class="lni lni-calendar"></i> 20 June, 2023</a>
+            </li>
+            <li>
+              <a href="javascript:void(0)"><i class="lni lni-map-marker"></i> Canada</a>
+            </li>
+            <li>
+              <a href="javascript:void(0)"><i class="lni lni-user"></i> Stifen Jon</a>
+            </li>
+            <li>
+              <a href="javascript:void(0)"><i class="lni lni-package"></i> Used</a>
+            </li>
+          </ul>
+          <div class="product-bottom">
+            <h3 class="price">$120.99</h3>
+            <a href="javascript:void(0)" class="link-ad"><i class="lni lni-checkmark-circle"></i> Verified Ad</a>
+          </div>
+        </div>
+      </div>
+    </div>
     <v-popup
         v-if="isInfoPopupVisible"
         rightBtnTitle="Add to cart"

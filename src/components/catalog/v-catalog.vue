@@ -1,91 +1,120 @@
 <template>
-  <div class='v-catalog'>
-
-    <v-notification
-        :messages="messages"
-    />
-
-
-    <router-link :to="{name: 'cart', params: {cart_data: CART}}">
-      <div class="v-catalog__link_to_cart">Cart: {{CART.length}}</div>
-    </router-link>
-    <h1>Catalog</h1>
-    <div class="filters">
-      <v-select
-          :selected="selected"
-          :options="categories"
-          @select="sortByCategories"
-      />
-      <div class="range-slider">
-        <input
-            type="range"
-            min="0"
-            max="1000"
-            step="10"
-            v-model.number="minPrice"
-            @change="setRangeSlider"
-        >
-        <input
-            type="range"
-            min="0"
-            max="10000"
-            step="10"
-            v-model.number="maxPrice"
-            @change="setRangeSlider"
-        >
-      </div>
-      <div class="range-values">
-        <p>Min: {{minPrice}}</p>
-        <p>Max: {{maxPrice}}</p>
+    <!-- Col view -->
+      <div v-if="!this.PRODUCTS.length"><h3>Товары не найдены, попробуйте поискать в других категориях!</h3></div>
+      
+        <div class="col-lg-6 col-md-6" v-for="product in  this.PRODUCTS" :key="product.id">
+          
+            <div class="single-product" v-if="!listView">
+              <router-link :to="`/product/${product.slug}`">
+                <div class="product-img">
+                  <a>
+                    <img width="350" height="260" :src="BACKEND_URL + product.photo" :alt="product.slug">
+                  </a>
+                  <div class="product-action">
+                    <a href="javascript:void(0)"><i class="lni lni-heart"></i></a>
+                    <a href="javascript:void(0)" class="share"><i class="lni lni-share"></i></a>
+                  </div>
+                </div>
+              </router-link>
+              
+              <div class="product-content">
+                <router-link :to="`/product/${product.slug}`">
+                  <h3 class="name"><a>{{ product.title }}</a></h3>
+                  <span class="update">Последнее обновление: {{convertDate(product.dateModified)}}</span>
+                  <ul class="address">
+                    <li>
+                      <a href="javascript:void(0)"><i class="lni lni-calendar"></i> {{convertDate(product.publishDate)}}</a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0)"><i class="lni lni-map-marker"></i> <i  v-for="lang in  product.languages" :key="lang.nameEn">{{lang.nameEn}} </i></a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0)"><i class="lni lni-user"></i> {{ product.company.name }}</a>
+                    </li>
+                    <li>
+                      <a href="javascript:void(0)"><i class="lni lni-package"></i> <i  v-for="tag in  product.tags" :key="tag.id">{{tag.name}} </i></a>
+                    </li>
+                  </ul>
+                </router-link>    
+                <div class="product-bottom ">
+                  <h3 class="price">{{product.price}} ₽</h3>
+                  <a v-on:click.stop="productClick(product)" class="link-ad"><i class="lni lni-checkmark-circle"></i> Добавить в корзину </a>
+                </div>
+              </div>
+            </div>
+          
+        </div>
+      
+    <!--  List view  -->
+    <div v-if="listView">
+      <div class="col-lg-12" v-for="product in  this.PRODUCTS" :key="product.id">
+        <div class="single-product list-view">
+          <div class="product-img">
+            <a href="product-details.html">
+              <!-- <img src="@/assets/images/product/l-product-6.jpg" :alt="product.slug"> -->
+              <img :src="BACKEND_URL + product.photo" :alt="product.slug">
+            </a>
+            <div class="product-action">
+              <a href="javascript:void(0)"><i class="lni lni-heart"></i></a>
+              <a href="javascript:void(0)" class="share"><i class="lni lni-share"></i></a>
+            </div>
+          </div>
+    
+          <div class="product-content">
+            <h3 class="name"><a href="product-details.html">{{ product.title }}</a></h3>
+            <span class="update">Последнее обновление : {{convertDate(product.dateModified)}}</span>
+            <ul class="address">
+              <li>
+                <a href="javascript:void(0)"><i class="lni lni-calendar"></i> {{convertDate(product.publishDate)}}</a>
+              </li>
+              <li>
+                <a href="javascript:void(0)"><i class="lni lni-map-marker"></i> <i  v-for="lang in  product.languages" :key="lang.nameEn">{{lang.nameEn}} </i></a>
+              </li>
+              <li>
+                <a href="javascript:void(0)"><i class="lni lni-user"></i> {{ product.company.name }}</a>
+              </li>
+              <li>
+                <a href="javascript:void(0)"><i class="lni lni-package"></i> <i  v-for="tag in  product.tags" :key="tag.id">{{tag.name}} </i></a>
+              </li>
+            </ul>
+            <div class="product-bottom">
+              <h3 class="price">{{product.price}} ₽  </h3>
+              <button v-on:click.stop="productClick(product)" class="link-ad"><i class="lni lni-checkmark-circle"></i> Добавить в корзину</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="v-catalog__list">
-      <v-catalog-item
-          v-for="product in filteredProducts"
-          :key="product.article"
-          :product_data="product"
-          @addToCart="addToCart"
-          @productClick="productClick"
-      />
-    </div>
-  </div>
 </template>
 
 <script>
-  import vCatalogItem from './v-catalog-item'
+  // import vCatalogItem from './v-catalog-item'
   import {mapActions, mapGetters} from 'vuex'
-  import vSelect from '../v-select'
-  import vNotification from '../notifications/v-notification'
 
   export default {
     name: "v-catalog",
     components: {
-      vCatalogItem,
-      vSelect,
-      vNotification
+      // vCatalogItem,
     },
-    props: {},
+    props: ['allProducts', 'listView'],
     data() {
       return {
-        categories: [
-          {name: 'Все', value: 'ALL'},
-          {name: 'Мужские', value: 'м'},
-          {name: 'Женские', value: 'ж'},
-        ],
         selected: 'Все',
         sortedProducts: [],
         minPrice: 0,
         maxPrice: 10000,
-        messages: []
+        messages: [],
       }
     },
     computed: {
       ...mapGetters([
         'PRODUCTS',
         'CART',
+        'TAGS',
         'IS_MOBILE',
         'IS_DESKTOP',
-        'SEARCH_VALUE'
+        'SEARCH_VALUE',
+        'BACKEND_URL',
       ]),
       filteredProducts() {
         if (this.sortedProducts.length) {
@@ -98,10 +127,15 @@
     methods: {
       ...mapActions([
         'GET_PRODUCTS_FROM_API',
-        'ADD_TO_CART'
+        'GET_TAGS_FROM_API',
+        'ADD_TO_CART',
       ]),
-      productClick(article) {
-        this.$router.push( {name: 'product', query: { 'product': article }})
+      convertDate(date){
+        return (new Date(date)).toLocaleDateString() 
+      },
+      productClick(product) {
+        this.ADD_TO_CART(product);
+        console.log(this.CART);
       },
       setRangeSlider() {
         if (this.minPrice > this.maxPrice) {
@@ -152,16 +186,99 @@
     mounted() {
       this.GET_PRODUCTS_FROM_API()
         .then((response) => {
+          console.log('response', response);
           if (response.data) {
+            console.log('true', response.data);
             this.sortByCategories()
             this.sortProductsBySearchValue(this.SEARCH_VALUE)
           }
         })
+      this.GET_TAGS_FROM_API()
+      .then((response) => {
+        console.log('response', response);
+        if (response.data) {
+          console.log('true', response.data);
+        }
+      })
     }
   }
 </script>
 
 <style lang="scss">
+  .easynetshop-3 {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    font-family: "Nunito", "Helvetica", "Arial", sans-serif;
+    color: #000000;
+    line-height: 1.42857143;
+    font-weight: normal;
+    font-size: 14px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    text-align: center;
+    float: left;
+    position: relative;
+    min-height: 1px;
+    padding-right: 5px;
+    padding-left: 5px;
+    box-sizing: border-box;
+    width: 25%;
+  }
+  .easynetshop-self-quant-input {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    box-sizing: border-box;
+    color: inherit;
+    font: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    width: 25px;
+    margin: 0px 2px 0px 2px;
+    border: 1px solid #dad9d5;
+    text-align: center;
+  }
+  .easynetshop-self-plus-quant {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    box-sizing: border-box;
+    color: inherit;
+    font: inherit;
+    overflow: visible;
+    text-transform: none;
+    -webkit-appearance: button;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    background: #fff;
+    border: 1px solid #dad9d5;
+    width: 25px;
+    margin: 0;
+    padding: 1px 6px;
+    line-height: 18.5714px;
+  }
+
+  .easynetshop-self-minus-quant {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    box-sizing: border-box;
+    color: inherit;
+    font: inherit;
+    overflow: visible;
+    text-transform: none;
+    -webkit-appearance: button;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    background: #fff;
+    border: 1px solid #dad9d5;
+    width: 25px;
+    margin: 0;
+    padding: 1px 6px;
+
+  }
   .v-catalog {
     &__list {
       display: flex;
@@ -205,4 +322,55 @@
     top: 2px;
     margin-top: -7px;
   }
+  .number {
+    position: relative;
+    text-align: left;
+    padding: 0;
+    width: 140px;
+    border: 1px solid #ddd;
+    display: inline-block;
+}
+.number-minus, .number-plus {
+    position: absolute;
+    top: 0;
+    width: 40px;
+    height: 32px;
+    line-height: 32px;
+    display: block;
+    background: #faf4f2;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    font-family: arial;
+    color: #3e1e02;
+    text-decoration: none;
+}
+.number-minus {
+    left: 0;
+    border-right: 1px solid #ddd;
+}
+.number-plus {
+    right: 0;
+    border-left: 1px solid #ddd;
+}
+.number-minus:hover, .number-plus:hover {
+    background: #fffcfb;
+}
+.number-minus:active, .number-plus:active {
+    background: #e8e4e2;
+}
+.number-text{
+    display: inline-block;
+    font-size: 14px;
+    color: #000;
+    line-height: 32px;
+    height: 32px;
+    padding: 0;
+    margin: 0 0 0 42px;
+    background: #fff;
+    outline: none;
+    border: none;
+    width: 57px;
+    text-align: center;
+}
 </style>

@@ -20,6 +20,7 @@ import AllProductsComp from '@/components/AllProducts'
 import vCart from '@/components/cart/v-cart'
 import vMainPage from '@/components/main-page/v-main-page'
 import vProductPage from '@/components/catalog/v-product-page'
+import vFormOfPayment from '@/components/cart/v-form-of-payment'
 // import Router from 'vue-router'
 // import Vue from 'vue'
 
@@ -27,28 +28,61 @@ import vProductPage from '@/components/catalog/v-product-page'
 
 let router = createRouter({
   history: createWebHistory(),
-  routes: [
-    {
-      path: '/',
-      name: 'mainPage',
-      component: vMainPage
-    },
-    {
-      path: '/catalog',
-      name: 'catalog',
-      component: AllProductsComp
-    },
-    {
-      path: '/product',
-      name: 'product',
-      component: vProductPage
-    },
-    {
-      path: '/cart',
-      name: 'cart',
-      component: vCart,
-      props: true
-    }
+  routes: 
+  // [{
+  //   path: '/',
+  //   name: 'mainPage',
+  //   component: {vMainPage },
+  //   meta: { title: 'Документация' },
+  //   children: [
+  //     {
+  //       path: '/catalog',
+  //       name: 'catalog',
+  //       component: AllProductsComp,
+  //       meta: { title: 'Вся документация' },
+  //     },
+  //     {
+  //       path: '/product/:slug',
+  //       name: 'product',
+  //       component: vProductPage,
+  //       meta: { title: 'Добавить документ' },
+  //     },
+  //     {
+  //       path: '/cart',
+  //       name: 'cart',
+  //       component: vCart,
+  //       props: true,
+  //       meta: { title: 'Редактировать документ' },
+  //     },
+  //   ],
+  [
+      {
+        path: '/',
+        name: 'mainPage',
+        component: vMainPage
+      },
+      {
+        path: '/catalog',
+        name: 'catalog',
+        component: AllProductsComp
+      },
+      {
+        path: '/product/:slug',
+        name: 'product',
+        component: vProductPage
+      },
+      {
+        path: '/cart',
+        name: 'cart',
+        component: vCart,
+        props: true
+      },
+      {
+        path: '/form-of-payment',
+        name: 'formOfPayment',
+        component: vFormOfPayment,
+      },
   ]
+// }]
 })
 export default router
