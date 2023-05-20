@@ -17,6 +17,9 @@ export default  {
   CART(state) {
     return state.cart;
   },
+  USER: (state) => {
+    return state.user;
+  },
   BACKEND_URL(state) {
     return state.backendUrl;
   }

@@ -7,7 +7,7 @@ import { createApolloProvider } from '@vue/apollo-option'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 // import { BootstrapVue } from 'bootstrap-vue'
-
+import { createHttpLink } from 'apollo-link-http'
 // Vuetify
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import 'vuetify/styles'
@@ -28,8 +28,13 @@ const vuetify = createVuetify({
 })
 
 const cache = new InMemoryCache()
+const httpLink = createHttpLink({
+  // You should use an absolute URL here
+  uri: 'http://localhost:8000/graphql',
+})
 
 const apolloClient = new ApolloClient({
+  link: httpLink,
   cache,
   uri: 'http://localhost:8000/graphql',
 })
@@ -38,7 +43,7 @@ const apolloProvider = createApolloProvider({
   defaultClient: apolloClient,
 })
 
-
+import VueApollo from 'vue-apollo'
 const app = createApp({
   render: () => h(App),
 })
@@ -47,6 +52,7 @@ app.component('VueDatePicker', VueDatePicker);
 app.use(store)
 app.use(router)
 app.use(apolloProvider)
+app.use(VueApollo)
 app.use(vuetify)
 app.mount('#app')
 

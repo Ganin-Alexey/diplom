@@ -15,7 +15,7 @@
     <!--====== PRELOADER PART ENDS ======-->
   
     <!--====== HEADER PART START ======-->
-  
+    <loginMenu v-if="this.$store.state.logInMenu"></loginMenu>
     <header class="header_area">
       <div id="header_navbar" class="header_navbar">
         <div class="container position-relative">
@@ -53,22 +53,21 @@
                   </ul>
                 </div>
                 <ul class="header-btn d-md-flex">
-                  <li>
-                    <a href="#" style="" class="main-btn account-btn">
+                  <li v-if="userValid">
+                    <a href="#"  class="main-btn account-btn">
                       <span class="d-md-none"><i class="lni lni-user"></i></span>
                       <span class="d-none d-md-block">Мой аккаунт</span>
                     </a>
                     <ul class="dropdown-nav">
-                      <li><a href="dashboard.html">Dashboard</a></li>
-                      <li><a href="profile-settings.html">Profile Settings</a></li>
-                      <li><a href="post-ad.html">Post Ad</a></li>
-                      <li><a href="my-ads.html">My Ads</a></li>
-                      <li><a href="offers.html">Offers/Messages</a></li>
-                      <li><a href="payments.html">Payments</a></li>
-                      <li><a href="favorites.html">Favorites</a></li>
-                      <li><a href="privacy.html">Privacy</a></li>
-                      <li><a href="javascript:void(0)">Sign Out</a></li>
+                      <li><a href="profile-settings.html">Изменить личные данные</a></li>
+                      <li><a @click="signOut()" href="javascript:void(0)">Выйти</a></li>
                     </ul>
+                  </li>
+                  <li v-else>
+                    <a @click="this.$store.state.logInMenu = true" href="#" class="main-btn account-btn m-r-2">
+                      <span class="d-md-none"><i class="lni lni-user"></i></span>
+                      <span class="d-none d-md-block">Войти</span>
+                    </a>
                   </li>
                   <li>
                     <!-- <a class="main-btn btn-hover d-none d-md-block">Оформить заказ</a> -->
@@ -233,7 +232,9 @@
   import vCategories from '@/components/catalog/v-categories'
   import vCatalog from '@/components/catalog/v-catalog'
   import vFormOfPayment from '@/components/cart/v-form-of-payment'
+  import loginMenu from '@/components/v-log-in-menu'
   import {mapGetters, mapActions} from 'vuex'
+
 
   export default {
     name: 'App',
@@ -243,22 +244,39 @@
       vCategories,
       vCart,
       vFormOfPayment,
+      loginMenu
     },
     data () {
     return {
         allProducts: null,
+        userValid: false,
     }
   },
   methods: {
     ...mapActions([
       'GET_PRODUCTS_FROM_API',
+      'SET_USER_TO_STATE',
+      'SET_SIGN_OUT',
       ]),
     ...mapGetters([
       'CART',
+      'USER',
     ]),
     getProducts(){
-        return this.GET_PRODUCTS_FROM_API()
-      },
+      return this.GET_PRODUCTS_FROM_API()
+    },
+    getUser() {
+      console.log('Получил пользователя!', this.USER);
+      if (this.USER.token) {
+        this.userValid = true;
+        return true
+      }
+      return false
+    },
+    signOut() {
+      console.log('Вышел из аккаунта!')
+      this.USER = [];
+    }
   },
   computed: {
     
@@ -266,6 +284,7 @@
 
   compatConfig: { MODE: 3 },
   created () {
+    this.getUser()
   },
   }
   </script>

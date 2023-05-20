@@ -142,7 +142,6 @@ import VCart from './v-cart.vue';
         nameUser: null,
         lastName: null,
         email: null,
-        movie: null,
         cardCVV: null,
         cardDate: {
           month: new Date().getMonth(),

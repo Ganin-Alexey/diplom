@@ -20,6 +20,8 @@ let store = new Vuex.Store({
     cart: [],
     tags: [],
 
+    user: [],
+    logInMenu: false,
     backendUrl: 'http://localhost:8000/media/',
   },
   mutations,

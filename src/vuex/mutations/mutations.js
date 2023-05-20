@@ -16,6 +16,12 @@ export default {
   SET_TAGS_TO_STATE: (state, tags) => {
     state.tags = tags;
   },
+  SET_USER_TO_STATE: (state, user) => {
+    state.user = user;
+  },
+  SET_SIGN_OUT: (state) => {
+    state.user = [];
+  },
   SET_CART: (state, product) => {
     let isProductExists = false;
     if (state.cart.length) {
