@@ -120,8 +120,10 @@
 
 </template>
 <script>
-  import VueDatePicker from '@vuepic/vue-datepicker';
+import gql from 'graphql-tag'
+import VueDatePicker from '@vuepic/vue-datepicker';
 import VCart from './v-cart.vue';
+import {mapGetters} from 'vuex'
   export default {
     name: "v-form-of-payment",
     components: {
@@ -157,14 +159,36 @@ import VCart from './v-cart.vue';
       }
     },
     computed: {},
+    ...mapGetters([
+        'CART',
+    ]),
     async created () {
       console.log('FORM URL', this.$route);
     },
     methods: {
+      async ORDER_PAYMENT(email, ids) {
+      return await this.$apollo.query({
+        // Query
+        query: gql`query ($email: String!, $ids: [ID]) {
+          orderPayment (email: $email, ids: $ids)
+        }`,
+        // Parameters
+        variables: {
+          email: email,
+          ids: ids,
+        },
+      }).then((result) => {
+        // Result
+        console.log(result);
+        return result;
+        }).catch((error) => {
+          console.log(error);
+          return null;
+        })
+    },
     checkForm: function () {
       this.validateOn = true;
       this.errors = [];
-      console.log('FORM VALIDATW: ', this.nameUser, this.validateOn);
       if (!this.validEmail(this.email)) {
         this.emailValid = false;
         this.errors.push(false);
@@ -186,6 +210,9 @@ import VCart from './v-cart.vue';
 
       if (this.errors.length == 0) {
         alert('Оплата произведена успешна, продукт(ы) высланы вам на почту!');
+        let ids = Array.from(this.$store.state.cart, p => p.id);
+        console.log('idsidsidsidsidsids', ids);
+        this.ORDER_PAYMENT(this.email, ids);
         this.$store.state.cart = [];
         this.$router.push({path: '/'});
       }

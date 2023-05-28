@@ -56,25 +56,9 @@ const tagsQuery = {
   `,
   "variables": {}
 };
-
-const userQuery = {
-  "query": `
-  mutation {
-    viewer (token: $token} ) {
-      firstName
-      lastName
-      email
-      avatar
-      bankcardNumber
-    }
-  }
-  `,
-  "variables": {token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IjEyM0BtYWlsLnJ1IiwiZXhwIjoxNjg0NTg5MDU3LCJvcmlnSWF0IjoxNjg0NTg4NzU3fQ.iHnVoBLg-p7ElaVZF1wJPY5s2hpb0Gx5YA7rSXZ-vuA"}
-};
-
+import gql from 'graphql-tag'
 export default {
   GET_PRODUCTS_FROM_API({commit}, tagId=0) {
-    console.log('TAG =', tagId, allProductsQuery['query']);
     let newAllProductsQuery = Object.assign({}, allProductsQuery); 
     if (tagId != 0) {
       newAllProductsQuery['query'] = newAllProductsQuery['query'].replace('{tag}', `(tag: ${tagId})`);
@@ -113,25 +97,24 @@ export default {
         return error;
       })
   },
-  GET_USER_FROM_API({commit}) {
-
-    // let newUserQuery = Object.assign({}, userQuery); 
-    userQuery.variables = {token:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IjEyM0BtYWlsLnJ1IiwiZXhwIjoxNjg0NTg5MDU3LCJvcmlnSWF0IjoxNjg0NTg4NzU3fQ.iHnVoBLg-p7ElaVZF1wJPY5s2hpb0Gx5YA7rSXZ-vuA"}
-    console.log('USER', userQuery['query']);
-    return axios({
-      url: endpoint,
-      method: 'post',
-      headers: headers,
-      data: userQuery
-    })
-      .then((user) => {
-        commit('SET_USER_TO_STATE', user.data.data.viewer);
-        console.log(user.data.data.viewer);
-        return user.data;
-      })
-      .catch((error) => {
-        console.log(error)
-        return error;
-      })
+  GET_USER_FROM_API({commit}, token) {
+    this.$apollo.mutate({
+      // Query
+      mutation: gql`mutation ($token: String!) {
+        viewer(token: $token) {
+          email
+          firstName
+          lastName
+        }
+      }`,
+      // Parameters
+      variables: {
+        token: token,
+      },
+    }).then((result) => {
+      // Result
+      let data = {token: token, data: result.viewer}
+      commit('SET_USER_TO_STATE', data);
+      console.log('Пользователь получен по токену!', data)});
   },
 }

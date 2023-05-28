@@ -61,6 +61,9 @@
                   <div v-if="(!email | !emailValid) & validateOn" class="invalid-feedback" style="display: block;">
                     Пожалуйста введите корректную электронную почту!
                   </div>
+                  <div v-else-if="emailAlreadyExists" class="invalid-feedback" style="display: block;">
+                    Такой email уже занят, пожалуйста введите другой или выполните вход!
+                  </div>
                 </div>
                 <div class="col-12 form-floating">
                   <input
@@ -127,6 +130,9 @@
                     Пожалуйста введите верный пароль!
                   </div>
                 </div>
+                <div v-if="notValidUser" class="invalid-feedback" style="display: block;">
+                  Данный пользователь не найден!
+                </div>
                 <div class="checkbox mb-2"></div>
                 <button  class="w-100 btn btn-lg btn-primary" type="submit" v-on:click.stop="checkForm();">Войти</button>
             </form>
@@ -145,16 +151,16 @@
 </template>
 
 <script>
-  import {mapActions} from 'vuex'
+
+import gql from 'graphql-tag'
+import {mapActions} from 'vuex'
+
 export default {
   name: 'log-in-menu',
   props: {
     msg: String
   },
-  ...mapActions([
-      'GET_USER_FROM_API',
-      'SET_SIGN_OUT'
-      ]),
+
   data() {
       return {
         toRegister: false,
@@ -165,7 +171,10 @@ export default {
         emailValid: true,
         emailSignIn: null,
         emailSignInValid: true,
+        emailAlreadyExists: false,
         validateOn: false,
+
+        notValidUser: false,
 
         password1: null,
         password1Valid: true,
@@ -177,13 +186,95 @@ export default {
         passwordSignInValid: true,
       }
   },
-  mounted() {
-  },
+  mounted() {},
+
   methods: {
-    checkForm: function () {
+    ...mapActions([
+      'GET_USER_FROM_API',
+      'GET_TOKEN_AUTH',
+      'SET_SIGN_OUT'
+    ]),
+    GET_USER_FROM_API(token) {
+    this.$apollo.query({
+      // Query
+      query: gql`query ($token: String!) {
+        viewer(token: $token) {
+          firstName
+          lastName
+          email
+          avatar
+        }
+      }`,
+      // Parameters
+      variables: {
+        token: token,
+      },
+    }).then((result) => {
+      // Resul
+      let data = {token: token, data: result.data.viewer};
+      this.$store.commit('SET_USER_TO_STATE', data);
+      console.log('Пользователь получен по токену!', data)});
+      return 
+    },
+    async REGISTRATE_USER(firstName, lastName, email, password) {
+      return await this.$apollo.mutate({
+        // Query
+        mutation: gql`mutation ($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
+          registerUser (firstName: $firstName, lastName: $lastName, email: $email, password: $password) {
+            user {
+              lastName
+              firstName
+              email
+            }
+          }
+        }`,
+        // Parameters
+        variables: {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password,
+        },
+      }).then((result) => {
+        // Resul
+        this.$store.commit('SET_USER_TO_STATE', {token: "token", data: result.data.registerUser.user});
+        console.log('Удачно пользователь записан! ', this.$store.state.user);
+        return true;
+        }).catch((error) => {
+          console.log(error);
+          return null;
+        });
+    },
+    async GET_TOKEN_AUTH(email, password) {
+      return await this.$apollo.mutate({
+        // Query
+        mutation: gql`mutation ($email: String!, $password: String!) {
+          tokenAuth (email: $email, password: $password) {
+            token
+            payload
+            refreshExpiresIn
+          }
+        }`,
+        // Parameters
+        variables: {
+          email: email,
+          password: password,
+        },
+      }).then((result) => {
+        // Result
+        this.GET_USER_FROM_API(result.data.tokenAuth.token);
+        console.log('Пользователь авторизован!', result.data.tokenAuth.token);
+        return true;
+      }).catch((error) => {
+          console.log(error);
+          return null;
+      });
+    },
+    async checkForm() {
       this.validateOn = true;
+      this.emailAlreadyExists = false;
+      this.notValidUser = false;
       this.errors = [];
-      console.log('FORM VALIDATW: ', this.nameUser, this.validateOn);
       if (this.toRegister) { 
         // Регистрация
         if (!this.validEmail(this.email)) {
@@ -218,19 +309,24 @@ export default {
 
 
       if (this.errors.length == 0) {
-        // let user = this.logIn()
-        let user =  this.$store.dispatch({
-        type: 'GET_USER_FROM_API',
-          // myprop: 'msg'
-        }).then(function(value){
-            console.log(`Из промиса получены данные: ${value}`);
-        })
-        // let user = this.GET_USER_FROM_API();
-        console.log('USEEEEEEEEEEEEEEEEEEEEEER', user);
-        alert(user);
-        alert('Оплата произведена успешна, продукт(ы) высланы вам на почту!');
-        this.$store.state.cart = [];
-        this.$router.push({path: '/'});
+        if (this.toRegister) {
+          let res = await this.REGISTRATE_USER(this.nameUser, this.lastName, this.email, this.password1);
+          if (!res) {
+            this.emailAlreadyExists = true;
+            this.errors.push(false);
+            return;
+          }
+          this.emailAlreadyExists = false;
+        } else {
+          let res = await this.GET_TOKEN_AUTH(this.emailSignIn, this.passwordSignIn);
+          if (!res) {
+            this.notValidUser = true;
+            this.errors.push(false);
+            return;
+          }
+        }
+        // this.GET_USER_FROM_API(this.$store.state.user.token);
+        this.$store.state.logInMenu = false;
       }
     },
     validEmail: function (email) {

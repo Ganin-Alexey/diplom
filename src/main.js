@@ -43,7 +43,7 @@ const apolloProvider = createApolloProvider({
   defaultClient: apolloClient,
 })
 
-import VueApollo from 'vue-apollo'
+// import VueApollo from 'vue-apollo'
 const app = createApp({
   render: () => h(App),
 })
@@ -52,7 +52,7 @@ app.component('VueDatePicker', VueDatePicker);
 app.use(store)
 app.use(router)
 app.use(apolloProvider)
-app.use(VueApollo)
+// app.use(VueApollo)
 app.use(vuetify)
 app.mount('#app')
 

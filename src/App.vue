@@ -27,7 +27,7 @@
                     <img id="logo" src="@/assets/images/logo/logo_file-2.jpg" alt="Logo">
                   </router-link>
                 </a>
-                <button class="navbar-toggler"  style="background-color: #FF6B6B;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                <button class="navbar-toggler mb-3"  style="background-color: #FF6B6B;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                   aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="toggler-icon"></span>
                   <span class="toggler-icon"></span>
@@ -53,13 +53,16 @@
                   </ul>
                 </div>
                 <ul class="header-btn d-md-flex">
-                  <li v-if="userValid">
+                  <li v-if="this.$store.state.user.token">
                     <a href="#"  class="main-btn account-btn">
                       <span class="d-md-none"><i class="lni lni-user"></i></span>
                       <span class="d-none d-md-block">Мой аккаунт</span>
                     </a>
                     <ul class="dropdown-nav">
-                      <li><a href="profile-settings.html">Изменить личные данные</a></li>
+                       
+                      <li v-if="this.USER().data.firstName" >{{ this.USER().data.firstName }} {{ this.USER().data.lastName }}</li>
+                      <li v-if="this.USER().data.firstName">{{ this.USER().data.email }}</li>
+                      <!-- <li><a href="profile-settings.html">Изменить личные данные</a></li> -->
                       <li><a @click="signOut()" href="javascript:void(0)">Выйти</a></li>
                     </ul>
                   </li>
@@ -70,17 +73,16 @@
                     </a>
                   </li>
                   <li>
-                    <!-- <a class="main-btn btn-hover d-none d-md-block">Оформить заказ</a> -->
                     <router-link v-if="this.$store.state.cart.length" :to="{name: 'formOfPayment'}">
                       <button class="main-btn btn-hover d-none d-md-block" type="button">Оформить заказ</button>
                     </router-link>
                   </li>
                 </ul>
-              </nav> <!-- navbar -->
+              </nav>
             </div>
-          </div> <!-- row -->
-        </div> <!-- container -->
-      </div> <!-- header navbar -->
+          </div> 
+        </div> 
+      </div> 
     </header>
   
     <!--====== HEADER PART ENDS ======-->
@@ -148,9 +150,9 @@
                   </li>
                 </ul>
   
-                <form action="#">
-                  <input type="text" name="search" id="search" placeholder="Search">
-                  <button><i class="lni lni-search-alt"></i></button>
+                <form @submit.prevent="" novalidate>
+                  <input v-model="query" type="text" name="search" id="search" placeholder="Поиск">
+                  <button  v-on:click.stop="findProducts(query);"><i class="lni lni-search-alt"></i></button>
                 </form>
               </div>
             </div>
@@ -261,21 +263,71 @@
     ...mapGetters([
       'CART',
       'USER',
+      'PRODUCTS',
     ]),
+    async FIND_PRODUCTS(query) {
+      return await this.$apollo.query({
+        // Query
+        query: gql`query ($query: String!) {
+          productsSearch (query: $query) {
+            id
+            title
+            price
+            description
+            publishDate
+            dateModified
+            published
+            metaDescription
+            slug
+            photo
+            company {
+              id
+              name
+            }
+            languages {
+              nameEn
+            }
+            operatingSystems {
+              name
+            }
+            tags {
+              id
+              name
+            }
+          }
+        }`,
+        // Parameters
+        variables: {
+          query: query,
+        },
+      }).then((result) => {
+        // Result
+        console.log(result);
+        return result;
+        }).catch((error) => {
+          console.log(error);
+          return null;
+        })
+    },
+    async findProducts(query){
+    let result = await this.FIND_PRODUCTS(query);
+    this.$store.commit('SET_PRODUCTS_TO_STATE', result.data.productsSearch);
+    console.log('NNNNNNNNNNNNNNNNNNNNN',query, result.data.productsSearch);
+    },
     getProducts(){
       return this.GET_PRODUCTS_FROM_API()
     },
     getUser() {
-      console.log('Получил пользователя!', this.USER);
       if (this.USER.token) {
+        this.GET_USER_FROM_API(this.USER.token)
         this.userValid = true;
         return true
       }
       return false
     },
     signOut() {
-      console.log('Вышел из аккаунта!')
-      this.USER = [];
+      this.$store.commit('SET_USER_TO_STATE', {token: null, data: null});
+      console.log('Вышел из аккаунта!', this.$store.state.user.token);
     }
   },
   computed: {
@@ -284,7 +336,8 @@
 
   compatConfig: { MODE: 3 },
   created () {
-    this.getUser()
+    this.$store.state.logInMenu = false;
+    // this.getUser()
   },
   }
   </script>

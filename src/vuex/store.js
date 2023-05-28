@@ -20,7 +20,7 @@ let store = new Vuex.Store({
     cart: [],
     tags: [],
 
-    user: [],
+    user: {token: null, data: null},
     logInMenu: false,
     backendUrl: 'http://localhost:8000/media/',
   },
