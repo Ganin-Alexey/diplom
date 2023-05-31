@@ -141,9 +141,9 @@ import {mapGetters} from 'vuex'
     data() {
       return {
         errors: [],
-        nameUser: null,
-        lastName: null,
-        email: null,
+        nameUser: this.$store.state.user.data ? this.$store.state.user.data.firstName : null,
+        lastName:  this.$store.state.user.data ? this.$store.state.user.data.lastName : null,
+        email: this.$store.state.user.data ? this.$store.state.user.data.email : null,
         cardCVV: null,
         cardDate: {
           month: new Date().getMonth(),
@@ -161,6 +161,7 @@ import {mapGetters} from 'vuex'
     computed: {},
     ...mapGetters([
         'CART',
+        'USER',
     ]),
     async created () {
       console.log('FORM URL', this.$route);
@@ -211,7 +212,6 @@ import {mapGetters} from 'vuex'
       if (this.errors.length == 0) {
         alert('Оплата произведена успешна, продукт(ы) высланы вам на почту!');
         let ids = Array.from(this.$store.state.cart, p => p.id);
-        console.log('idsidsidsidsidsids', ids);
         this.ORDER_PAYMENT(this.email, ids);
         this.$store.state.cart = [];
         this.$router.push({path: '/'});

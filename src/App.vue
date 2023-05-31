@@ -72,7 +72,7 @@
                       <span class="d-none d-md-block">Войти</span>
                     </a>
                   </li>
-                  <li>
+                  <li v-if="this.$route.name != 'formOfPayment'">
                     <router-link v-if="this.$store.state.cart.length" :to="{name: 'formOfPayment'}">
                       <button class="main-btn btn-hover d-none d-md-block" type="button">Оформить заказ</button>
                     </router-link>
