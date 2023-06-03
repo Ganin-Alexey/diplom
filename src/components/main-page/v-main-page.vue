@@ -1,8 +1,6 @@
 /* eslint-disable */
 <template>
   <div>
-      <router-link :to="{name: 'catalog'}">
-      </router-link>
     <router-view />
    </div>
 </template>

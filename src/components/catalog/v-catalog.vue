@@ -50,10 +50,7 @@
       <div class="col-lg-12" v-for="product in  this.PRODUCTS" :key="product.id">
         <div class="single-product list-view">
           <div class="product-img">
-            <a href="product-details.html">
-              <!-- <img src="@/assets/images/product/l-product-6.jpg" :alt="product.slug"> -->
-              <img :src="BACKEND_URL + product.photo" :alt="product.slug">
-            </a>
+            <img :src="BACKEND_URL + product.photo" :alt="product.slug">
             <div class="product-action">
               <a href="javascript:void(0)"><i class="lni lni-heart"></i></a>
               <a href="javascript:void(0)" class="share"><i class="lni lni-share"></i></a>
@@ -61,7 +58,7 @@
           </div>
     
           <div class="product-content">
-            <h3 class="name"><a href="product-details.html">{{ product.title }}</a></h3>
+            <h3 class="name">{{ product.title }}</h3>
             <span class="update">Последнее обновление : {{convertDate(product.dateModified)}}</span>
             <ul class="address">
               <li>
@@ -135,7 +132,6 @@
       },
       productClick(product) {
         this.ADD_TO_CART(product);
-        console.log(this.CART);
       },
       setRangeSlider() {
         if (this.minPrice > this.maxPrice) {
@@ -186,19 +182,14 @@
     mounted() {
       this.GET_PRODUCTS_FROM_API()
         .then((response) => {
-          console.log('response', response);
           if (response.data) {
-            console.log('true', response.data);
             this.sortByCategories()
             this.sortProductsBySearchValue(this.SEARCH_VALUE)
           }
         })
       this.GET_TAGS_FROM_API()
       .then((response) => {
-        console.log('response', response);
-        if (response.data) {
-          console.log('true', response.data);
-        }
+        console.log(response);
       })
     }
   }

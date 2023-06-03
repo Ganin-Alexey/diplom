@@ -46,7 +46,7 @@
                       </router-link>
                     </li>
                     <li class="nav-item">
-                      <router-link style="color: #FF6B6B;" active-class="page-scroll link-item" exact-path-active-class="link-item" exact-active-class=" page-scroll link-item" :to="{name: ''}">
+                      <router-link style="color: #FF6B6B;" active-class="page-scroll link-item" exact-path-active-class="link-item" exact-active-class="active page-scroll link-item" :to="{name: 'about'}">
                         О нас
                       </router-link>
                     </li>
@@ -100,11 +100,11 @@
                 <ol class="breadcrumb">
                   <li class="breadcrumb-item">
                     <router-link :to="{name: 'mainPage'}">
-                      
                       <a style="color: #525252;" active-class="page-scroll link-item" exact-path-active-class="link-item" exact-active-class=" page-scroll link-item" href="index.html">Продукты</a>
                     </router-link>
                   </li>
                   <li v-if="this.$route.name == 'formOfPayment'" style="color: #525252;" active-class="page-scroll link-item" class="breadcrumb-item active" aria-current="page">Корзина</li>
+                  <li v-else-if="this.$route.name == 'about' " style="color: #525252;" active-class="page-scroll link-item" class="breadcrumb-item active" aria-current="page">О нас</li>
                   <li v-else-if="this.$route.path != '/'" style="color: #525252;" active-class="page-scroll link-item" class="breadcrumb-item active" aria-current="page">Товар</li>
                 </ol>
               </nav>
@@ -188,7 +188,7 @@
             </div>
   
             <!-- sidebar wrapper  -->
-            <div  v-if="this.$route.name != 'formOfPayment'" class="col-lg-4">
+            <div  v-if="this.$route.name != 'formOfPayment' & this.$route.name != 'about'" class="col-lg-4">
               <div class="sidebar-wrapper">
                 <!-- CART  -->
                 <vCart></vCart>
@@ -229,7 +229,6 @@
 <script>
   import gql from 'graphql-tag'
   import vCart from '@/components/cart/v-cart'
-  import vMainPage from '@/components/main-page/v-main-page'
   import vProductPage from '@/components/catalog/v-product-page'
   import vCategories from '@/components/catalog/v-categories'
   import vCatalog from '@/components/catalog/v-catalog'
@@ -241,7 +240,6 @@
   export default {
     name: 'App',
     components: {
-      vMainPage,
       vCatalog,
       vCategories,
       vCart,
@@ -312,7 +310,6 @@
     async findProducts(query){
     let result = await this.FIND_PRODUCTS(query);
     this.$store.commit('SET_PRODUCTS_TO_STATE', result.data.productsSearch);
-    console.log('NNNNNNNNNNNNNNNNNNNNN',query, result.data.productsSearch);
     },
     getProducts(){
       return this.GET_PRODUCTS_FROM_API()
@@ -327,7 +324,6 @@
     },
     signOut() {
       this.$store.commit('SET_USER_TO_STATE', {token: null, data: null});
-      console.log('Вышел из аккаунта!', this.$store.state.user.token);
     }
   },
   computed: {

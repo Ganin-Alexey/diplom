@@ -12,10 +12,8 @@ export default {
   },
   SET_PRODUCTS_TO_STATE: (state, products) => {
     let copyProducts = Object.assign({}, products);
-    console.log('copyProducts', copyProducts);
     copyProducts = [copyProducts];
     copyProducts.forEach(function(item) {
-      console.log(item)
       item.quantity = 0;
     });
     state.products = products;
@@ -24,7 +22,6 @@ export default {
     state.tags = tags;
   },
   SET_USER_TO_STATE: (state, userData) => {
-    console.log('ДАНННЫЕ ПОЛЬЗОВАТЕЛЯ! ', userData);
     state.user.data = userData.data;
     state.user.token = userData.token;
   },

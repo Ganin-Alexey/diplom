@@ -37,14 +37,10 @@
         'ADD_TO_CART',
         ]),
         getProductsByTag(tagId){
-            console.log('TAG_ID -', tagId);
             this.GET_PRODUCTS_FROM_API(tagId)
                 .then((response) => {
-                console.log('response', response);
                 if (response.data) {
                     this.$router.push({ name: 'mainPage' });
-                    console.log('UPDATE URL!', this.$route);
-                    console.log('true', response.data);
                     this.$emit("sortByCategories");
                     this.$emit("sortProductsBySearchValue", this.SEARCH_VALUE);
                 }

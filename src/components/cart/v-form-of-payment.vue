@@ -164,7 +164,6 @@ import {mapGetters} from 'vuex'
         'USER',
     ]),
     async created () {
-      console.log('FORM URL', this.$route);
     },
     methods: {
       async ORDER_PAYMENT(email, ids) {

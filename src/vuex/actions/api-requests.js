@@ -89,7 +89,6 @@ export default {
     })
       .then((tags) => {
         commit('SET_TAGS_TO_STATE', tags.data.data.tagsWithCountOfProducts);
-        console.log( tags.data.data.tagsWithCountOfProducts);
         return tags.data;
       })
       .catch((error) => {
