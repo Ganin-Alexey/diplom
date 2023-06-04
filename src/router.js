@@ -14,11 +14,6 @@ let router = createRouter({
         name: 'mainPage',
         component: vMainPage
       },
-      // {
-      //   path: '/catalog',
-      //   name: 'catalog',
-      //   component: AllProductsComp
-      // },
       {
         path: '/product/:slug',
         name: 'product',
